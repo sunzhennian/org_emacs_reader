@@ -46,12 +46,15 @@ class OrgEmacsReader(BaseReader):
         mswindows = (sys.platform == "win32")
         import os
         if not mswindows:
-            status,content=commands.getstatusoutput("emacs -Q --script %s/getContent.el %s"%(os.path.split(os.path.realpath(__file__))[0],filename))
+            status,content=commands.getstatusoutput("emacs --script %s/getContent.el %s"%(os.path.split(os.path.realpath(__file__))[0],filename))
         else:
-            status,content=self.getstatusoutput("emacs -Q --script %s %s"%(os.path.join(os.path.split(os.path.realpath(__file__))[0],"getContent.el"),filename))
+            status,content=self.getstatusoutput("emacs --script %s %s"%(os.path.join(os.path.split(os.path.realpath(__file__))[0],"getContent.el"),filename))
         soup = BeautifulSoup(content, 'html.parser')
         if soup.find(id="table-of-contents"):
             soup.find(id="table-of-contents").extract()
+        #replace_reg = re.compile(r"([\s\S]*?)images")
+        #for img in soup.find_all("img"):
+         #   img["src"]=replace_reg.sub("/images",str(img["src"]))
         content=soup.prettify()
         h_level=range(2,6)
         for n in reversed(h_level):
